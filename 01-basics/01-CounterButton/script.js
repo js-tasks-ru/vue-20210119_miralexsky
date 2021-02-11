@@ -1,4 +1,11 @@
 import Vue from './vue.esm.browser.js';
 
-// const app = ...
-// Рекомендуется использовать МЕТОД в качестве обработчика события
+const app = new Vue({
+    template: '#vue-counter',
+    el: '#vue-counter',
+    data() {
+        return {
+            counter: 0,
+        }
+    },
+})
