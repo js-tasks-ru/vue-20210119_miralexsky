@@ -1,10 +1,14 @@
 import Vue from './vue.esm.browser.js';
 
 /** URL адрес API */
-const API_URL = 'https://course-vue.javascript.ru/api';
-
+const API_URL = 'https://course-vue.javascript.ru/api/';
+const apiUrls = {
+  meetups: API_URL + 'meetups',
+  meetup:  API_URL + 'meetups/',
+  images:  API_URL + 'images/',
+}
 /** ID митапа для примера; используйте его при получении митапа */
-const MEETUP_ID = 6;
+const MEETUP_ID = 1;  
 
 /**
  * Возвращает ссылку на изображение по идентификатору, например, изображение митапа
@@ -12,7 +16,8 @@ const MEETUP_ID = 6;
  * @return {string} - ссылка на изображение
  */
 function getImageUrlByImageId(imageId) {
-  return `${API_URL}/images/${imageId}`;
+  if (imageId == null) return {}
+  return apiUrls.images + imageId;
 }
 
 /**
@@ -45,24 +50,72 @@ const getAgendaItemIcons = () => ({
 });
 
 export const app = new Vue({
+  template: '#app',
   el: '#app',
 
   data() {
     return {
-      // Требуется хранить данные митапа
+      meetupData: null,
     };
   },
 
   mounted() {
-    // Требуется получить данные митапа с API
+    this.loadMeetup()
   },
 
   computed: {
-    // Возможно, здесь помогут вычисляемые свойства
+
+    isAgendaEmpty() {
+      return this.meetupComputed.agenda.length == 0
+    },
+
+    meetupComputed() {
+      if (!this.meetupData) return null
+    
+      return {
+        ...this.meetupData,
+        imageBGUrl: this.meetupData.imageId ? 
+          this.getBGImage(getImageUrlByImageId(this.meetupData.imageId)) : {},
+        date: this.localeDate(this.meetupData.date),
+        agenda: this.meetupData.agenda.map((agendaItem) => {
+          return {
+            ...agendaItem,
+            duration: this.agendaTime(agendaItem),
+            icon: this.getAgendaIcon(agendaItem),
+            defaultTitle: this.getDefaultTitle(agendaItem),
+          }
+        })
+      }
+    }
   },
 
   methods: {
-    // Получение данных с API предпочтительнее оформить отдельным методом,
-    // а не писать прямо в mounted()
+    loadMeetup() {
+      fetch(apiUrls.meetup + MEETUP_ID)
+      .then(response => response.json()).then(responseObj => { this.meetupData = responseObj })   
+    },
+
+    getBGImage(url) {
+      return {
+        '--bg-url': 'url(' + url + ')' 
+      }
+    },
+
+    agendaTime(agenda) {
+      let {startsAt, endsAt} = agenda
+      return `${startsAt} - ${endsAt}`;
+    },
+
+    localeDate(date) {
+      return (new Date(date)).toLocaleDateString()
+    },
+
+    getAgendaIcon(agendaItem) {
+      return getAgendaItemIcons()[agendaItem.type]
+    },
+
+    getDefaultTitle(agendaItem) {
+      return getAgendaItemDefaultTitles()[agendaItem.type]
+    }
   },
 });
