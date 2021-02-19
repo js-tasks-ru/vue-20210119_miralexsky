@@ -1,10 +1,26 @@
 export const CounterButton = {
-  // Шаблон потребуется отредактировать
-  template: '<button type="button"></button>',
 
-  // Компонент должен иметь входной параметр
+  template: `<button @click="incrementHardCode">{{ fittedCount }}</button>`,
 
-  // Компонент должен иметь модель
+  props: {
+    'count': { type: Number},
+    'value': {type: Number}
+  },
 
-  // Шаблон лучше держать максимально простым, а логику выносить в методы
+  computed: {
+    vCount() {
+      let localCount = this.count || this.value;
+      return ++localCount || 1;
+    },
+    fittedCount() {
+      return this.count || this.value || 0
+    }
+  },
+
+  methods: {
+    incrementHardCode() {
+      this.$emit('increment', this.vCount);
+      this.$emit('input', this.vCount);
+    }
+  }
 };
