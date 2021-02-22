@@ -1,26 +1,23 @@
 export const CounterButton = {
-
-  template: `<button @click="incrementHardCode">{{ fittedCount }}</button>`,
+  inheritAttrs: false,
+  template: `<button @click="increment">{{ count }}</button>`,
 
   props: {
-    'count': { type: Number},
-    'value': {type: Number}
+    'count': { 
+      type: Number,
+      require: true,
+      default: 0,
+    },
   },
 
-  computed: {
-    vCount() {
-      let localCount = this.count || this.value;
-      return ++localCount || 1;
-    },
-    fittedCount() {
-      return this.count || this.value || 0
-    }
+  model: {
+    prop: 'count',
+    event: 'increment',
   },
 
   methods: {
-    incrementHardCode() {
-      this.$emit('increment', this.vCount);
-      this.$emit('input', this.vCount);
+    increment() {
+      return this.$emit('increment', this.count + 1);
     }
   }
 };
