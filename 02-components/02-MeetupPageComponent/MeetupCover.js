@@ -13,6 +13,6 @@ export const MeetupCover = {
       return {
         '--bg-url': this.link ? `url(${this.link})` : ''
       }
-    }
+    },
   }
 };

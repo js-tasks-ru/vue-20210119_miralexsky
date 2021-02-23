@@ -23,9 +23,7 @@ export const MeetupPage = {
   methods: {
     getMeetup() {
       fetchMeetup(MEETUP_ID).then((meetup) => {
-        meetup.link = getMeetupCoverLink(meetup);
-        meetup.date = new Date(meetup.date)
-        this.meetup = meetup;
+        this.meetup = meetup
       });
     }
   },
