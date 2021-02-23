@@ -1,5 +1,4 @@
 export const CounterButton = {
-  inheritAttrs: false,
   template: `<button @click="increment">{{ count }}</button>`,
 
   props: {
