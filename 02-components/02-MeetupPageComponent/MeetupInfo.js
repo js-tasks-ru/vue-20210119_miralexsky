@@ -31,10 +31,10 @@ export const MeetupInfo = {
 
   computed: {
     dateString() {
-      return (new Date(this.date)).toLocaleString([], {year: 'numeric', month: 'long', day: 'numeric'})
+      return this.date.toLocaleString(navigator.language, {year: 'numeric', month: 'long', day: 'numeric'})
     },
     dateLocal() {
-      return (new Date(this.date)).toLocaleDateString()
+      return this.date.toISOString().substr(0, 10)
     },
     
   }
