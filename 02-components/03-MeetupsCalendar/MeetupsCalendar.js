@@ -69,7 +69,7 @@ export const MeetupsCalendar = {
     calendarStart() {
       let newDate = new Date(this.currentDate);
 
-      while (newDate.getUTCDay() != 0) {
+      while (newDate.getDay() != 1) {
         newDate.setDate(newDate.getDate() - 1);
       }
 
@@ -81,7 +81,7 @@ export const MeetupsCalendar = {
       newDate.setMonth(newDate.getMonth() + 1);
       newDate.setDate(0);
 
-      while (newDate.getUTCDay() != 6) {
+      while (newDate.getDay() != 0) {
         newDate.setDate(newDate.getDate() + 1);
       }
 
@@ -110,11 +110,13 @@ export const MeetupsCalendar = {
         let startDay = new Date(calendarDate);
         startDay.setHours(0, 0, 0, 0);
 
+        let isCurrentMonth = startDay.getMonth() == this.currentDate.getMonth();
+
         calendar.push({
           id: startDay.getTime(),
           meetupDate: new Date(startDay),
-          inactive: startDay.getMonth() !== this.currentDate.getMonth(),
-          meetups: this.currentMeetups[startDay.getDate()],
+          inactive: !isCurrentMonth,
+          meetups: isCurrentMonth ? this.currentMeetups[startDay.getDate()] : [],
         });
 
         calendarDate.setDate(calendarDate.getDate() + 1);
