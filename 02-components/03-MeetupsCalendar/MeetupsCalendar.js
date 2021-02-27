@@ -32,13 +32,14 @@ export const MeetupsCalendar = {
   },
 
   data() {
-    return {
-      currentDate: Date.now(),
-    };
-  },
+    let currentDate = new Date();
+    currentDate.setDate(1);
+    currentDate.setHours(0,0,0,0);
 
-  created() {
-    this.setCurrentDate();
+    return {
+      currentDate,
+      computedCalendar: {},
+    };
   },
 
   computed: {
@@ -50,7 +51,19 @@ export const MeetupsCalendar = {
     },
 
     sortedMeetups() {
-      return this.meetups.sort((a, b) => a.date - b.date);
+      let sortedMeetups = {};
+
+      for (let meetup of this.meetups) {
+        let meetupDate = new Date(meetup.date);
+        let meetupYear = meetupDate.getFullYear();
+        let meetupMonth = meetupDate.getMonth();
+        let meetupDay = meetupDate.getDate();
+
+        let dayMeetups = this.getOrCreate(sortedMeetups, [], meetupYear, meetupMonth, meetupDay);
+        dayMeetups.push(meetup);
+      }
+
+      return sortedMeetups;
     },
 
     calendarStart() {
@@ -77,12 +90,19 @@ export const MeetupsCalendar = {
     },
 
     currentMeetups() {
-      //let meetups = this.meetups.filter(meetup => (meetup.date >= this.calendarStart && meetup.date <= this.calendarFinish));
-      let meetups = this.quickSearchAllMeetups(this.sortedMeetups, this.calendarStart, this.calendarFinish);
-      return meetups;
+      let yearMeetups = this.sortedMeetups[ this.currentDate.getFullYear() ];
+      let monthMeetups = yearMeetups ?  yearMeetups[ this.currentDate.getMonth() ] : [];
+      return monthMeetups ?? [];
     },
 
     calendarModel() {
+      let yearCalendar = this.computedCalendar[ this.currentDate.getFullYear() ];
+      let monthCalendar = yearCalendar ? yearCalendar[ this.currentDate.getMonth() ] : null;
+      if (monthCalendar) {
+        console.log('Yep, we\'ve got stored calendar');
+        return monthCalendar;
+      }
+
       let calendar = [];
       let calendarDate = new Date(this.calendarStart);
 
@@ -90,33 +110,23 @@ export const MeetupsCalendar = {
         let startDay = new Date(calendarDate);
         startDay.setHours(0, 0, 0, 0);
 
-        let finishDay = new Date(calendarDate);
-        finishDay.setHours(23, 59, 59, 59);
-
         calendar.push({
           id: startDay.getTime(),
           meetupDate: new Date(startDay),
           inactive: startDay.getMonth() !== this.currentDate.getMonth(),
-          meetups: this.currentMeetups.filter(meetup => 
-            meetup.date >= startDay.getTime() && 
-            meetup.date <= finishDay.getTime()),
+          meetups: this.currentMeetups[startDay.getDate()],
         });
 
         calendarDate.setDate(calendarDate.getDate() + 1);
       }
+
+      this.getOrCreate(this.computedCalendar, calendar, this.currentDate.getFullYear(), this.currentDate.getMonth());
 
       return calendar;
     }
   },
 
   methods: {
-    setCurrentDate() {
-      let currentDate = new Date();
-      currentDate.setDate(1);
-      currentDate.setHours(0,0,0,0);
-
-      this.currentDate = currentDate;
-    },
     prevMonth() {
       let newDate = new Date(this.currentDate);
       newDate.setMonth(this.currentDate.getMonth() - 1);
@@ -127,19 +137,16 @@ export const MeetupsCalendar = {
       newDate.setMonth(this.currentDate.getMonth() + 1);
       this.currentDate = newDate;
     },
+    getOrCreate(obj, lastItem, ...props) {
+      let stage = obj || {};
 
-    quickSearchAllMeetups(sortedMeetups, startDate, endDate) {
-      
-      let firstIndex = sortedMeetups.findIndex(meetup => meetup.date >= startDate.getTime());
-      if (firstIndex == -1) return [];
+      for (let propsIndex = 0; propsIndex < props.length; propsIndex++) {
+        let prop = props[propsIndex];
+        if (!stage[prop]) propsIndex == props.length - 1 ? stage[prop] = lastItem : stage[prop] = {};
+        stage = stage[prop];
+      }
 
-      let lastIndex = sortedMeetups.findIndex(meetup => meetup.date > endDate.getTime());
-      if (lastIndex == -1) 
-        lastIndex = sortedMeetups.length - 1;
-      else 
-        lastIndex -= 1;
-
-      return sortedMeetups.slice(firstIndex, lastIndex + 1);
-    }
+      return stage;
+    },
   },
 };
