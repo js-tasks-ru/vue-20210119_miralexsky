@@ -2,19 +2,40 @@ export const MeetupInfo = {
   template: `<ul class="info-list">
       <li>
         <img class="icon info-list__icon" alt="icon" src="/assets/icons/icon-user.svg" />
-        Организатор
+        {{ organizer }}
       </li>
       <li>
         <img class="icon info-list__icon" alt="icon" src="/assets/icons/icon-map.svg" />
-        Место
+        {{ place }}
       </li>
       <li>
         <img class="icon info-list__icon" alt="icon" src="/assets/icons/icon-cal-lg.svg" />
-        <time datetime="2020-01-01">1 янв. 2020</time>
+        <time :datetime="dateLocal">{{ dateString }}</time>
       </li>
     </ul>`,
 
-  // props
+  props: {
+    organizer: {
+      required: true,
+      type: String,
+    },
+    place: {
+      required: true,
+      type: String
+    },
+    date: {
+      required: true,
+      type: Date,
+    },
+  },
 
-  // computed
+  computed: {
+    dateString() {
+      return this.date.toLocaleString(navigator.language, {year: 'numeric', month: 'long', day: 'numeric'})
+    },
+    dateLocal() {
+      return this.date.toISOString().substr(0, 10)
+    },
+    
+  }
 };
