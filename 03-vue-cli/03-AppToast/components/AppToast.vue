@@ -1,12 +1,8 @@
 <template>
-  <div class="toasts">
-    <div class="toast toast_success">
-      <app-icon icon="check-circle" />
-      <span>Success</span>
-    </div>
-    <div class="toast toast_error">
-      <app-icon icon="alert-circle" />
-      <span>Error</span>
+  <div class="toasts" id="toasts">
+    <div v-for="(toast, index) in toasts" :key="index" class="toast" :class="toast.getClass()">
+      <app-icon :icon="toast.getImage()"/>
+      <span>{{ toast.message }}</span>
     </div>
   </div>
 </template>
@@ -16,15 +12,66 @@ import AppIcon from './AppIcon';
 
 const DELAY = 5000;
 
+class Toast {
+  constructor(type, message) {
+
+    this.classes = {
+      success: 'toast_success',
+      error: 'toast_error',
+    };
+
+    this.images = {
+      success: 'check-circle',
+      error: 'alert-circle',
+    };
+
+    this.type = type;
+    this.message = message;
+  }
+
+  getClass() {
+    return this.classes[this.type];
+  }
+
+  getImage() {
+    return this.images[this.type];
+  }
+
+}
+
 export default {
   name: 'AppToast',
 
-  components: { AppIcon },
+  data() {
+    return {
+      toasts: [],
+    };
+  },
+
+  components: {
+    AppIcon,
+  },
 
   methods: {
-    error(message) {},
+    error(message) {
+      let toast = new Toast('error', message);
+      this.toasts.push(toast);
 
-    success(message) {},
+      let _this = this;
+      setTimeout(function() {
+        _this.toasts.shift();
+      }, DELAY);
+    },
+
+    success(message) {
+      let toast = new Toast('success', message);
+      this.toasts.push(toast);
+
+      let _this = this;
+      setTimeout(function() {
+        _this.toasts.shift();
+      }, DELAY);
+    },
   },
 };
 </script>
