@@ -1,5 +1,7 @@
 <template>
-  <p>MeetupsPage</p>
+  <div class="page page_onboarding">
+    <p>MeetupsPage</p>
+  </div>
 </template>
 
 <script>
