@@ -1,18 +1,73 @@
 <template>
   <div
-    class="input-group input-group_icon input-group_icon-left input-group_icon-right"
+    class="input-group" :class="imageClass"
   >
-    <img class="icon" />
+    <slot name="left-icon">
+      <img class="icon"/>
+    </slot>
 
-    <input class="form-control form-control_rounded form-control_sm" />
+    <component
+      :is="multiline ? 'textarea' : 'input'"
+      class="form-control"
+      :class="inputClass"
+      :value.prop="value"
+      @input="$emit('input', $event.target.value)"
+      @change="$emit('change', $event.target.value)"
+      v-bind="$attrs"
+    />
 
-    <img class="icon" />
+    <slot name="right-icon">
+      <img class="icon"/>
+    </slot>
   </div>
 </template>
 
 <script>
 export default {
   name: 'AppInput',
+  inheritAttrs: false,
+  data() {
+    return {
+
+    };
+  },
+  computed: {
+    inputClass() {
+      return {
+        'form-control_rounded': this.rounded,
+        'form-control_sm': this.small,
+      };
+    },
+    imageClass() {
+      return {
+        'input-group_icon': !!this.$slots["left-icon"] || !!this.$slots["right-icon"],
+        'input-group_icon-left': !!this.$slots["left-icon"],
+        'input-group_icon-right': !!this.$slots["right-icon"],
+      };
+    },
+  },
+  props: {
+    small: {
+      required: false,
+      default: false,
+      type: Boolean,
+    },
+    rounded: {
+      required: false,
+      default: false,
+      type: Boolean,
+    },
+    multiline: {
+      required: false,
+      default: false,
+      type: Boolean,
+    },
+    value: {
+      required: false,
+      default: '',
+      type: String,
+    },
+  },
 };
 </script>
 
