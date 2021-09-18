@@ -1,10 +1,25 @@
 <template>
-  <button class="button"></button>
+  <component :is="tag" class="button" :class="{ 'button_block': block }" @click="$emit('click')">
+    <slot></slot>
+  </component>
 </template>
 
 <script>
 export default {
   name: 'BaseButton',
+  props: {
+    block: {
+      type: Boolean,
+      required:  false,
+      default: false,
+    },
+    tag: {
+      type: String,
+      required:  false,
+      default: 'button',
+      validator: (value) => ['button', 'a', 'router-link'].indexOf(value) !== -1
+    }
+  }
 };
 </script>
 

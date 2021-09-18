@@ -1,5 +1,7 @@
 <template>
-  <p>B | Prop = {{ prop }}</p>
+  <div>
+    <p>B | Prop = {{ prop }}</p>
+  </div>
 </template>
 
 <script>

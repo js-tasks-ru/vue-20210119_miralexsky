@@ -1,5 +1,5 @@
 <template>
-  <div>Page B</div>
+  <div class="page page__title text-center">Page B</div>
 </template>
 
 <script>
@@ -8,4 +8,6 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+
+</style>

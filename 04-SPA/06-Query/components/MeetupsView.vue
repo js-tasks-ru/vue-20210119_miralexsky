@@ -40,8 +40,7 @@
         <button @click="$emit('update:participation', 'all')">all</button> |
         <button @click="$emit('update:participation', 'attending')">
           attending
-        </button>
-        |
+        </button> |
         <button @click="$emit('update:participation', 'organizing')">
           organizing
         </button>
